@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
-    "test": "jest --coverage",
+    "test": "jest --coverage && node fix-lcov.js",
     "lint": "eslint src/ tests/",
     "lint:fix": "eslint src/ tests/ --fix"
   },
