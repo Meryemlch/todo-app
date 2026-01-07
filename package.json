@@ -40,8 +40,7 @@
     "coverageDirectory": "coverage",
     "forceExit": true,
     "collectCoverageFrom": [
-      "src/**/*.js",
-      "!src/app.js"
+      "src/**/*.js"
     ],
     "coverageReporters": ["text", "lcov", "html"]
   }
