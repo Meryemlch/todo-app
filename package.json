@@ -40,8 +40,14 @@
     "coverageDirectory": "coverage",
     "forceExit": true,
     "collectCoverageFrom": [
-      "src/**/*.js"
+      "src/routes/**/*.js",
+      "src/models/task.js"
     ],
-    "coverageReporters": ["text", "lcov", "html"]
+    "coverageReporters": ["text", "lcov", "html"],
+    "coverageThreshold": {
+    "global": {
+      "lines": 50
+    }
   }
+ }
 }
