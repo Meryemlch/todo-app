@@ -1,0 +1,347 @@
+/* Custom styles for Todo App */
+
+/* CSS Variables */
+:root {
+  --violet-50: #faf5ff;
+  --violet-100: #ede9fe;
+  --violet-200: #ddd6fe;
+  --violet-300: #c4b5fd;
+  --violet-400: #a78bfa;
+  --violet-500: #8b5cf6;
+  --violet-600: #7c3aed;
+  --violet-700: #6d28d9;
+}
+
+/* Base reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--violet-50);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--violet-300);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--violet-400);
+}
+
+/* Navigation buttons */
+.nav-btn {
+  color: #6b7280;
+}
+
+.nav-btn:hover {
+  background: var(--violet-50);
+  color: var(--violet-600);
+}
+
+.nav-btn.active {
+  background: linear-gradient(135deg, var(--violet-100) 0%, var(--violet-50) 100%);
+  color: var(--violet-600);
+  font-weight: 600;
+}
+
+/* Task card */
+.task-card {
+  background: white;
+  border-radius: 1rem;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.task-card:hover {
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+  border-color: var(--violet-200);
+  transform: translateY(-2px);
+}
+
+.task-card.completed {
+  background: var(--violet-50);
+  opacity: 0.8;
+}
+
+.task-card.completed .task-title {
+  text-decoration: line-through;
+  color: #9ca3af;
+}
+
+/* Custom checkbox */
+.custom-checkbox {
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--violet-300);
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.custom-checkbox:hover {
+  border-color: var(--violet-500);
+  background: var(--violet-50);
+}
+
+.custom-checkbox.checked {
+  background: linear-gradient(135deg, var(--violet-500) 0%, var(--violet-600) 100%);
+  border-color: var(--violet-500);
+}
+
+.custom-checkbox.checked svg {
+  display: block;
+}
+
+.custom-checkbox svg {
+  display: none;
+  color: white;
+  width: 14px;
+  height: 14px;
+}
+
+/* Priority badges */
+.priority-badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-weight: 500;
+}
+
+.priority-high {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.priority-medium {
+  background: #fffbeb;
+  color: #d97706;
+}
+
+.priority-low {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+/* Category badges */
+.category-badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  background: var(--violet-100);
+  color: var(--violet-600);
+  font-weight: 500;
+}
+
+/* Calendar day */
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0.5rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 60px;
+}
+
+.calendar-day:hover {
+  background: var(--violet-50);
+}
+
+.calendar-day.today {
+  background: linear-gradient(135deg, var(--violet-500) 0%, var(--violet-600) 100%);
+  color: white;
+}
+
+.calendar-day.has-event::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--violet-500);
+  margin-top: 4px;
+}
+
+.calendar-day.today.has-event::after {
+  background: white;
+}
+
+/* Event card */
+.event-card {
+  background: var(--violet-50);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.2s ease;
+}
+
+.event-card:hover {
+  background: var(--violet-100);
+}
+
+.event-color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Color button selection */
+.color-btn {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.color-btn:hover {
+  transform: scale(1.1);
+}
+
+.color-btn.selected {
+  ring: 2px solid;
+  ring-offset: 2px;
+}
+
+/* Progress bar */
+.progress-bar {
+  height: 8px;
+  background: var(--violet-100);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--violet-400) 0%, var(--violet-500) 100%);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* Animation classes */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+/* Action buttons */
+.action-btn {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  opacity: 0;
+}
+
+.task-card:hover .action-btn {
+  opacity: 1;
+}
+
+.action-btn:hover {
+  background: var(--violet-100);
+}
+
+.action-btn.delete:hover {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .task-card .action-btn {
+    opacity: 1;
+  }
+}
+
+/* Loading spinner */
+.spinner {
+  border: 3px solid var(--violet-100);
+  border-top: 3px solid var(--violet-500);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Toast notification */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  padding: 1rem 1.5rem;
+  border-radius: 1rem;
+  background: white;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  z-index: 100;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.toast.success {
+  border-left: 4px solid #10b981;
+}
+
+.toast.error {
+  border-left: 4px solid #ef4444;
+}

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo App - Gérez vos tâches</title>
+  <meta name="description" content="Application de gestion de tâches avec calendrier intégré">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            violet: {
+              50: '#faf5ff',
+              100: '#ede9fe',
+              200: '#ddd6fe',
+              300: '#c4b5fd',
+              400: '#a78bfa',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+              700: '#6d28d9',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-violet-50 min-h-screen">
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-white shadow-xl z-40 transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
+    <div class="p-6 border-b border-violet-100">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gradient-to-br from-violet-400 to-violet-600 rounded-xl flex items-center justify-center">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+          </svg>
+        </div>
+        <span class="text-xl font-bold text-gray-800">Todo App</span>
+      </div>
+    </div>
+    
+    <nav class="p-4 space-y-2">
+      <button onclick="showSection('tasks')" id="nav-tasks" class="nav-btn active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+        </svg>
+        Mes Tâches
+      </button>
+      <button onclick="showSection('calendar')" id="nav-calendar" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        </svg>
+        Calendrier
+      </button>
+      <button onclick="showSection('stats')" id="nav-stats" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+        </svg>
+        Statistiques
+      </button>
+    </nav>
+
+    <!-- User section at bottom -->
+    <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-violet-100">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 bg-violet-200 rounded-full flex items-center justify-center">
+          <span id="userInitial" class="text-violet-600 font-semibold">U</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p id="userEmail" class="text-sm font-medium text-gray-800 truncate">user@email.com</p>
+          <p class="text-xs text-gray-500">Connecté</p>
+        </div>
+      </div>
+      <button onclick="logout()" class="w-full flex items-center justify-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-xl transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+        </svg>
+        Déconnexion
+      </button>
+    </div>
+  </aside>
+
+  <!-- Mobile menu button -->
+  <button onclick="toggleSidebar()" class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-xl shadow-lg">
+    <svg class="w-6 h-6 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+    </svg>
+  </button>
+
+  <!-- Main Content -->
+  <main class="lg:ml-64 min-h-screen">
+    <!-- Tasks Section -->
+    <section id="section-tasks" class="p-6 lg:p-8">
+      <!-- Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div>
+          <h1 class="text-2xl lg:text-3xl font-bold text-gray-800">Mes Tâches</h1>
+          <p class="text-gray-500 mt-1">Gérez et organisez vos tâches quotidiennes</p>
+        </div>
+        <button onclick="openTaskModal()" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-500 to-violet-600 text-white rounded-xl font-semibold hover:from-violet-600 hover:to-violet-700 transition-all shadow-lg shadow-violet-500/30 transform hover:scale-105">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Nouvelle tâche
+        </button>
+      </div>
+
+      <!-- Filters -->
+      <div class="bg-white rounded-2xl shadow-sm p-4 mb-6">
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="flex-1">
+            <div class="relative">
+              <svg class="w-5 h-5 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+              <input type="text" id="searchInput" placeholder="Rechercher une tâche..." 
+                class="w-full pl-12 pr-4 py-3 border border-violet-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all">
+            </div>
+          </div>
+          <select id="filterCategory" class="px-4 py-3 border border-violet-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 bg-white">
+            <option value="">Toutes catégories</option>
+            <option value="general">Général</option>
+            <option value="work">Travail</option>
+            <option value="personal">Personnel</option>
+            <option value="shopping">Courses</option>
+            <option value="health">Santé</option>
+          </select>
+          <select id="filterPriority" class="px-4 py-3 border border-violet-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 bg-white">
+            <option value="">Toutes priorités</option>
+            <option value="high">Haute</option>
+            <option value="medium">Moyenne</option>
+            <option value="low">Basse</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Task List -->
+      <div id="taskList" class="space-y-3">
+        <!-- Tasks will be loaded here -->
+      </div>
+
+      <!-- Empty state -->
+      <div id="emptyState" class="hidden text-center py-16">
+        <div class="w-24 h-24 mx-auto mb-6 bg-violet-100 rounded-full flex items-center justify-center">
+          <svg class="w-12 h-12 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-800 mb-2">Aucune tâche</h3>
+        <p class="text-gray-500 mb-6">Commencez par créer votre première tâche</p>
+        <button onclick="openTaskModal()" class="inline-flex items-center gap-2 px-6 py-3 bg-violet-500 text-white rounded-xl font-semibold hover:bg-violet-600 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Créer une tâche
+        </button>
+      </div>
+    </section>
+
+    <!-- Calendar Section -->
+    <section id="section-calendar" class="p-6 lg:p-8 hidden">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div>
+          <h1 class="text-2xl lg:text-3xl font-bold text-gray-800">Calendrier</h1>
+          <p class="text-gray-500 mt-1">Visualisez vos événements et échéances</p>
+        </div>
+        <button onclick="openEventModal()" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-500 to-violet-600 text-white rounded-xl font-semibold hover:from-violet-600 hover:to-violet-700 transition-all shadow-lg shadow-violet-500/30">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Nouvel événement
+        </button>
+      </div>
+
+      <!-- Calendar Navigation -->
+      <div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
+        <div class="flex items-center justify-between mb-6">
+          <button onclick="prevMonth()" class="p-2 hover:bg-violet-100 rounded-xl transition-colors">
+            <svg class="w-6 h-6 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          <h2 id="currentMonth" class="text-xl font-bold text-gray-800"></h2>
+          <button onclick="nextMonth()" class="p-2 hover:bg-violet-100 rounded-xl transition-colors">
+            <svg class="w-6 h-6 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Calendar Grid -->
+        <div class="grid grid-cols-7 gap-1 mb-2">
+          <div class="text-center text-sm font-semibold text-violet-600 py-2">Dim</div>
+          <div class="text-center text-sm font-semibold text-violet-600 py-2">Lun</div>
+          <div class="text-center text-sm font-semibold text-violet-600 py-2">Mar</div>
+          <div class="text-center text-sm font-semibold text-violet-600 py-2">Mer</div>
+          <div class="text-center text-sm font-semibold text-violet-600 py-2">Jeu</div>
+          <div class="text-center text-sm font-semibold text-violet-600 py-2">Ven</div>
+          <div class="text-center text-sm font-semibold text-violet-600 py-2">Sam</div>
+        </div>
+        <div id="calendarGrid" class="grid grid-cols-7 gap-1">
+          <!-- Calendar days will be loaded here -->
+        </div>
+      </div>
+
+      <!-- Events List -->
+      <div class="bg-white rounded-2xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Événements du mois</h3>
+        <div id="eventsList" class="space-y-3">
+          <!-- Events will be loaded here -->
+        </div>
+        <div id="emptyEvents" class="hidden text-center py-8 text-gray-500">
+          Aucun événement ce mois-ci
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section id="section-stats" class="p-6 lg:p-8 hidden">
+      <div class="mb-8">
+        <h1 class="text-2xl lg:text-3xl font-bold text-gray-800">Statistiques</h1>
+        <p class="text-gray-500 mt-1">Suivez votre productivité</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-2xl shadow-sm p-6">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-violet-100 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Total tâches</p>
+              <p id="statTotal" class="text-2xl font-bold text-gray-800">0</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm p-6">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Terminées</p>
+              <p id="statCompleted" class="text-2xl font-bold text-green-600">0</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm p-6">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">En cours</p>
+              <p id="statPending" class="text-2xl font-bold text-orange-600">0</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm p-6">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-violet-100 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Taux de complétion</p>
+              <p id="statRate" class="text-2xl font-bold text-violet-600">0%</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress by category -->
+      <div class="bg-white rounded-2xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-6">Progression par catégorie</h3>
+        <div id="categoryStats" class="space-y-4">
+          <!-- Category stats will be loaded here -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Task Modal -->
+  <div id="taskModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div class="p-6 border-b border-violet-100">
+        <div class="flex items-center justify-between">
+          <h2 id="taskModalTitle" class="text-xl font-bold text-gray-800">Nouvelle tâche</h2>
+          <button onclick="closeTaskModal()" class="p-2 hover:bg-violet-100 rounded-xl transition-colors">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <form id="taskForm" class="p-6 space-y-5">
+        <input type="hidden" id="taskId">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Titre *</label>
+          <input type="text" id="taskTitle" required
+            class="w-full px-4 py-3 border border-violet-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all"
+            placeholder="Titre de la tâche">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+          <textarea id="taskDescription" rows="3"
+            class="w-full px-4 py-3 border border-violet-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all resize-none"
+            placeholder="Description de la tâche (optionnel)"></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Date d'échéance</label>
+            <input type="date" id="taskDueDate"
+              class="w-full px-4 py-3 border border-violet-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Priorité</label>
+            <select id="taskPriority"
+              class="w-full px-4 py-3 border border-violet-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 bg-white transition-all">
+              <option value="low">Basse</option>
+              <option value="medium" selected>Moyenne</option>
+              <option value="high">Haute</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Catégorie</label>
+          <select id="taskCategory"
+            class="w-full px-4 py-3 border border-violet-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 bg-white transition-all">
+            <option value="general">Général</option>
+            <option value="work">Travail</option>
+            <option value="personal">Personnel</option>
+            <option value="shopping">Courses</option>
+            <option value="health">Santé</option>
+          </select>
+        </div>
+        <div class="flex gap-3 pt-4">
+          <button type="button" onclick="closeTaskModal()" 
+            class="flex-1 px-4 py-3 border border-violet-200 text-gray-700 rounded-xl font-semibold hover:bg-violet-50 transition-colors">
+            Annuler
+          </button>
+          <button type="submit"
+            class="flex-1 px-4 py-3 bg-gradient-to-r from-violet-500 to-violet-600 text-white rounded-xl font-semibold hover:from-violet-600 hover:to-violet-700 transition-all shadow-lg shadow-violet-500/30">
+            Enregistrer
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Event Modal -->
+  <div id="eventModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
+      <div class="p-6 border-b border-violet-100">
+        <div class="flex items-center justify-between">
+          <h2 id="eventModalTitle" class="text-xl font-bold text-gray-800">Nouvel événement</h2>
+          <button onclick="closeEventModal()" class="p-2 hover:bg-violet-100 rounded-xl transition-colors">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <form id="eventForm" class="p-6 space-y-5">
+        <input type="hidden" id="eventId">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Titre *</label>
+          <input type="text" id="eventTitle" required
+            class="w-full px-4 py-3 border border-violet-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all"
+            placeholder="Titre de l'événement">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+          <textarea id="eventDescription" rows="2"
+            class="w-full px-4 py-3 border border-violet-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all resize-none"
+            placeholder="Description (optionnel)"></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Date *</label>
+            <input type="date" id="eventDate" required
+              class="w-full px-4 py-3 border border-violet-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Heure</label>
+            <input type="time" id="eventTime"
+              class="w-full px-4 py-3 border border-violet-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all">
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Couleur</label>
+          <div class="flex gap-2">
+            <button type="button" onclick="selectEventColor('#8b5cf6', event)" class="color-btn w-8 h-8 rounded-full bg-violet-500 ring-2 ring-offset-2 ring-violet-500"></button>
+            <button type="button" onclick="selectEventColor('#3b82f6', event)" class="color-btn w-8 h-8 rounded-full bg-blue-500"></button>
+            <button type="button" onclick="selectEventColor('#10b981', event)" class="color-btn w-8 h-8 rounded-full bg-emerald-500"></button>
+            <button type="button" onclick="selectEventColor('#f59e0b', event)" class="color-btn w-8 h-8 rounded-full bg-amber-500"></button>
+            <button type="button" onclick="selectEventColor('#ef4444', event)" class="color-btn w-8 h-8 rounded-full bg-red-500"></button>
+            <button type="button" onclick="selectEventColor('#ec4899', event)" class="color-btn w-8 h-8 rounded-full bg-pink-500"></button>
+          </div>
+          <input type="hidden" id="eventColor" value="#8b5cf6">
+        </div>
+        <div class="flex gap-3 pt-4">
+          <button type="button" onclick="closeEventModal()" 
+            class="flex-1 px-4 py-3 border border-violet-200 text-gray-700 rounded-xl font-semibold hover:bg-violet-50 transition-colors">
+            Annuler
+          </button>
+          <button type="submit"
+            class="flex-1 px-4 py-3 bg-gradient-to-r from-violet-500 to-violet-600 text-white rounded-xl font-semibold hover:from-violet-600 hover:to-violet-700 transition-all shadow-lg shadow-violet-500/30">
+            Enregistrer
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
+      <div class="text-center">
+        <div class="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+          <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">Confirmer la suppression</h3>
+        <p class="text-gray-500 mb-6">Cette action est irréversible. Voulez-vous continuer ?</p>
+        <div class="flex gap-3">
+          <button onclick="closeDeleteModal()" 
+            class="flex-1 px-4 py-3 border border-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-colors">
+            Annuler
+          </button>
+          <button onclick="confirmDelete()"
+            class="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-colors">
+            Supprimer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/src/script.js"></script>
+</body>
+</html>
