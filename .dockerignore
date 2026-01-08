@@ -1,0 +1,11 @@
+node_modules
+npm-debug.log
+coverage
+.git
+.github
+tests
+*.test.js
+.env
+.DS_Store
+README.md
+.eslintrc.json
