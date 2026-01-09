@@ -1,13 +1,22 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const fs = require('fs');
 
-const dbPath = path.resolve(__dirname, '../todo.db');
+const dbPath = process.env.DB_PATH || path.join(__dirname, '..', 'data', 'database.db');
+
+// Créer le dossier data s'il n'existe pas
+const dbDir = path.dirname(dbPath);
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir, { recursive: true });
+  console.log('Created database directory:', dbDir);
+}
 
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
     console.error('Error connecting to the database:', err.message);
   } else {
     console.log('Connected to the SQLite database.');
+    console.log('Database path:', dbPath);
   }
 });
 
